@@ -1,4 +1,4 @@
-package com.example.demo.config;
+package com.example.demo.mq.rocket;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.client.exception.MQClientException;
@@ -8,12 +8,14 @@ import org.apache.rocketmq.client.producer.SendStatus;
 import org.apache.rocketmq.common.message.Message;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 /**
  * rocketmq 配置
+ *
  * @author ranshaojie
  * @date 2017年5月14日 下午1:44:57
  */
@@ -30,6 +32,10 @@ public class MqConfig {
     //mq 消费者初始化名称
     @Value("${spring.mq.producerInstanceName}")
     private String producerInstanceName;
+    @Value("${spring.mq.topic}")
+    private String topic;
+    @Value("${spring.mq.tag}")
+    private String tag;
 
     private static DefaultMQProducer producer;
 
@@ -50,7 +56,7 @@ public class MqConfig {
 
             producer.start();
 
-            log.info("DefaultMQProudcer start success! producer:{}",producer);
+            log.info("DefaultMQProudcer start success! producer:{}", producer);
 
         } catch (MQClientException e) {
             log.error("MQProducer start MQClientException producer:{},e:{}", producer, e);
@@ -68,13 +74,18 @@ public class MqConfig {
     }
 
     /**
-     * 发送消息队列
+     * 发送消息
      *
-     * @param message 要发送的消息
+     * @param msgJson 要发送的消息
      * @return 发送状态
      */
-    public boolean sendMsg(Message message) {
+    public boolean send(String msgJson) {
         try {
+            Message message = new Message();
+            message.setTopic(topic);
+            message.setTags(tag);
+            message.setBody(msgJson.getBytes());
+
             SendResult sendResult = producer.send(message);
             log.info("MQProducer sendMsg sendResult:{}", sendResult);
             return sendResult != null && sendResult.getSendStatus() == SendStatus.SEND_OK;
@@ -84,10 +95,21 @@ public class MqConfig {
         return false;
     }
 
-    public SendResult send(Message message) {
+    /**
+     * 发送消息
+     *
+     * @param msgJson
+     * @return
+     */
+    public SendResult sendMsg(String msgJson) {
 
         SendResult sendResult = null;
         try {
+            Message message = new Message();
+            message.setTopic(topic);
+            message.setTags(tag);
+            message.setBody(msgJson.getBytes());
+
             sendResult = producer.send(message);
             log.info("MQProducer sendMsg sendResult:{}", sendResult);
         } catch (Exception e) {
