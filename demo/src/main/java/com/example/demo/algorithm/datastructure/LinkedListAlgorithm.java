@@ -1,14 +1,8 @@
 package com.example.demo.algorithm.datastructure;
 
-import com.fasterxml.jackson.databind.util.LinkedNode;
-import jdk.nashorn.internal.ir.ReturnNode;
-
-import java.util.List;
-import java.util.spi.LocaleServiceProvider;
-
 /**
  * @author ransahojie
- * @Description: TODO
+ * @Description: linked
  * @date 2018/9/18 14:16
  */
 public class LinkedListAlgorithm {
