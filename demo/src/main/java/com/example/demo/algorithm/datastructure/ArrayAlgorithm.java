@@ -418,4 +418,90 @@ public class ArrayAlgorithm {
     List<List<Integer>> result = this.threeSum(new int[]{-2, 0, 1, 1, 2});
     log.info(JSON.toJSONString(result));
   }
+
+  public List<List<String>> groupAnagrams(String[] strs) {
+    if (strs == null || strs.length == 0) {
+      return Collections.emptyList();
+    }
+    Map<String, List<String>> map = new HashMap<>();
+    for (int i = 0; i < strs.length; i++) {
+      char[] strCharArr = strs[i].toCharArray();
+      Arrays.sort(strCharArr);
+      String sortedStr = String.valueOf(strCharArr);
+      map.putIfAbsent(sortedStr, new ArrayList<>());
+      map.get(sortedStr).add(strs[i]);
+    }
+    return new ArrayList<>(map.values());
+  }
+
+  @Test
+  public void testGroupAnagrams() {
+    List<List<String>> result = this
+        .groupAnagrams(new String[]{"eat", "tea", "tan", "ate", "nat", "bat"});
+    log.info(JSON.toJSONString(result));
+  }
+
+  /**
+   * Given a string, find the length of the longest substring without repeating characters.
+   * fast slow pointer
+   */
+  public int lengthOfLongestSubstring(String s) {
+    if (s == null || s == "") {
+      return 0;
+    }
+    int max = 0;
+    int slow = 0;
+    Map<Character, Integer> map = new HashMap<>();
+    for (int i = 0; i < s.length(); i++) {
+      if (map.containsKey(s.charAt(i))) {
+        slow = Math.max(map.get(s.charAt(i)) + 1, slow);
+      }
+      max = Math.max(max, i - slow + 1);
+      map.put(s.charAt(i), i);
+    }
+    return max;
+  }
+
+  @Test
+  public void testLengthOfLongestSubstring() {
+    int result = this.lengthOfLongestSubstring("abba");
+    log.info(JSON.toJSONString(result));
+  }
+
+  /**
+   * Given a string s, find the longest palindromic substring in s. You may assume that the maximum
+   * length of s is 1000.
+   */
+  public String longestPalindrome(String s) {
+    if (s == null || s == "") {
+      return "";
+    }
+    int len = s.length();
+    int start = 0;
+    int maxLen = 0;
+    boolean[][] sign = new boolean[len][len];
+    for (int i = 0; i < len; i++) {
+      for (int j = 0; j <= i; j++) {
+        if (i == j) {
+          sign[j][i] = true;
+        } else if (i - j == 1) {
+          sign[j][i] = s.charAt(j) == s.charAt(i);
+        } else {
+          sign[j][i] = (s.charAt(j) == s.charAt(i)) && sign[j + 1][i - 1];
+        }
+        if (sign[j][i] && (i - j + 1) > maxLen) {
+          start = j;
+          maxLen = i - j + 1;
+        }
+      }
+    }
+    return s.substring(start, start + maxLen);
+  }
+
+  @Test
+  public void testLongestPalindrome() {
+    String result = this.longestPalindrome("level");
+    log.info(JSON.toJSONString(result));
+  }
+
 }
