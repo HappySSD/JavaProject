@@ -16,7 +16,6 @@ import java.io.IOException;
 /**
  * Created by Administrator on 2018/10/11.
  */
-@Configuration
 public class AmqpConfig {
 
     @Value("${rabmq.addresses}")

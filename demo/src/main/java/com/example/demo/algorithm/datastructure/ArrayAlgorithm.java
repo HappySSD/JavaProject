@@ -370,6 +370,10 @@ public class ArrayAlgorithm {
     return true;
   }
 
+  /**
+   * Given an array nums of n integers, are there elements a, b, c in nums such that a + b + c = 0?
+   * Find all unique triplets in the array which gives the sum of zero.
+   */
   public List<List<Integer>> threeSum(int[] nums) {
     if (nums == null || nums.length < 3) {
       return Collections.emptyList();
@@ -504,4 +508,230 @@ public class ArrayAlgorithm {
     log.info(JSON.toJSONString(result));
   }
 
+  /**
+   * Given an unsorted array return whether an increasing subsequence of length 3 exists or not in
+   * the array.
+   * three pointer
+   */
+  public boolean increasingTriplet(int[] nums) {
+    if (nums == null || nums.length < 3) {
+      return false;
+    }
+    int minValue = Integer.MAX_VALUE;
+    int midValue = Integer.MAX_VALUE;
+    for (int i = 0; i < nums.length; i++) {
+      if (nums[i] <= minValue) {
+        minValue = nums[i];
+      } else if (nums[i] <= midValue) {
+        midValue = nums[i];
+      } else {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  @Test
+  public void testIncreasingTriplet() {
+    boolean result = this.increasingTriplet(new int[]{1, 1, 1, 1, 1});
+    log.info(JSON.toJSONString(result));
+  }
+
+  /**
+   * 合并两个有序数组
+   * 从后往前合并到一个数组.
+   */
+  public void merge(int[] nums1, int m, int[] nums2, int n) {
+    while (m >= 0 && n >= 0) {
+      if (n == 0) {
+        return;
+      }
+
+      if (m == 0 && n > 0) {
+        for (int i = 0; i < n; i++) {
+          nums1[i] = nums2[i];
+        }
+        return;
+      }
+
+      if (nums1[m - 1] > nums2[n - 1]) {
+        nums1[m + n - 1] = nums1[m - 1];
+        m--;
+      } else {
+        nums1[m + n - 1] = nums2[n - 1];
+        n--;
+      }
+    }
+  }
+
+  /**
+   * 第一个错误的版本.
+   */
+  public int firstBadVersion(int n) {
+    int left = 1, right = n;
+    while (left < right) {
+      int mid = left + (right - left) / 2;
+      if (isBadVersion(mid)) {
+        right = mid;
+      } else {
+        left = mid + 1;
+      }
+    }
+    return right;
+  }
+
+  /**
+   * 判断是否错误.
+   */
+  private boolean isBadVersion(int mid) {
+    return true;
+  }
+
+  @Test
+  public void testArray() {
+    int[] arr = new int[5];
+    String result = JSON.toJSONString(arr);
+    int[] parse = JSON.parseObject(result, int[].class);
+    log.info(JSON.toJSONString(parse));
+  }
+
+  public int findPoisonedDuration(int[] timeSeries, int duration) {
+    if (timeSeries == null || timeSeries.length == 0) {
+      return 0;
+    }
+    int total = 0;
+    for (int i = 0; i < timeSeries.length; i++) {
+      int end = timeSeries[i] + duration;
+      if ((i + 1) < timeSeries.length) {
+        if (timeSeries[i + 1] > end) {
+          total += duration;
+        } else {
+          total += timeSeries[i + 1] - timeSeries[i];
+        }
+      } else {
+        total += duration;
+      }
+    }
+    return total;
+  }
+
+  public int majorityElement(int[] nums) {
+    if (nums == null || nums.length == 0) {
+      return -1;
+    }
+    Map<Integer, Integer> map = new HashMap<>();
+    for (int i = 0; i < nums.length; i++) {
+      if (map.containsKey(nums[i])) {
+        map.put(nums[i], map.get(nums[i]) + 1);
+      } else {
+        map.put(nums[i], 1);
+      }
+    }
+    for (Map.Entry entry : map.entrySet()) {
+      if ((Integer) entry.getValue() > nums.length / 2) {
+        return (Integer) entry.getKey();
+      }
+    }
+    return -1;
+  }
+
+  @Test
+  public void testMajorityElement() {
+    int result = this.majorityElement(new int[]{3, 2, 3});
+    log.info(JSON.toJSONString(result));
+  }
+
+  /**
+   * Given an array nums of n integers and an integer target, find three integers in nums such that
+   * the sum is closest to target. Return the sum of the three integers. You may assume that each
+   * input would have exactly one solution.
+   */
+  public int threeSumClosest(int[] nums, int target) {
+    if (nums == null || nums.length < 3) {
+      return -1;
+    }
+    Arrays.sort(nums);
+    int bestSum = nums[0] + nums[1] + nums[2];
+    for (int i = 0; i < nums.length - 2; i++) {
+      int start = i + 1;
+      int end = nums.length - 1;
+      while (start < end) {
+        int threeSum = nums[i] + nums[start] + nums[end];
+        if (threeSum == target) {
+          return target;
+        }
+        if (Math.abs(threeSum - target) < Math.abs(bestSum - target)) {
+          bestSum = threeSum;
+        }
+        if (threeSum < target) {
+          start++;
+        }
+        if (threeSum > target) {
+          end--;
+        }
+      }
+    }
+    return bestSum;
+  }
+
+  @Test
+  public void testThreeSumClosest() {
+    int result = this.threeSumClosest(new int[]{0, 1, 2}, 3);
+    log.info(JSON.toJSONString(result));
+  }
+
+  /**
+   * Given an array nums of n integers and an integer target, are there elements a, b, c, and d
+   * in nums such that a + b + c + d = target? Find all unique quadruplets in the array which
+   * gives the sum of target.
+   */
+  public List<List<Integer>> fourSum(int[] nums, int target) {
+    if (nums == null || nums.length < 4) {
+      return Collections.emptyList();
+    }
+    Arrays.sort(nums);
+    List<List<Integer>> result = new ArrayList();
+    for (int i = 0; i < nums.length - 3; i++) {
+      if (i > 0 && nums[i] == nums[i - 1]) {
+        continue;
+      }
+      for (int j = i + 1; j < nums.length - 2; j++) {
+        if (j > i + 1 && nums[j] == nums[j - 1]) {
+          continue;
+        }
+        int l = j + 1;
+        int r = nums.length - 1;
+        while (l < r) {
+          int fourSum = nums[i] + nums[j] + nums[l] + nums[r];
+          if (fourSum == target) {
+            List<Integer> tmp = new ArrayList();
+            tmp.add(nums[i]);
+            tmp.add(nums[j]);
+            tmp.add(nums[l]);
+            tmp.add(nums[r]);
+            result.add(tmp);
+            l++;
+            r--;
+            while (l < r && nums[l] == nums[l - 1]) {
+              l++;
+            }
+            while (l < r && nums[r] == nums[r + 1]) {
+              r--;
+            }
+          } else if (fourSum < target) {
+            l++;
+          } else {
+            r--;
+          }
+        }
+      }
+    }
+    return result;
+  }
+
+  @Test
+  public void testFourSum() {
+    List<List<Integer>> result = this.fourSum(new int[]{0, 0, 0, 0}, 0);
+    log.info(JSON.toJSONString(result));
+  }
 }

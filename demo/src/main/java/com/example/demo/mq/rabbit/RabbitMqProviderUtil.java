@@ -4,7 +4,6 @@ import com.rabbitmq.client.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 /**
  * @author ransahojie
@@ -12,34 +11,34 @@ import org.springframework.stereotype.Component;
  * @date 2018/9/28 17:49
  */
 @Slf4j
-@Component
 public class RabbitMqProviderUtil {
-    @Autowired
-    private Channel rabbitChannel;
 
-    @Value("${rabitmq.queue.name}")
-    private String queueName;
+  @Autowired
+  private Channel rabbitChannel;
 
-    /**
-     * 发送消息
-     * @param routeKey  路由键名称
-     * @param msgJson   消息json串
-     * @return
-     */
-    public boolean send(String routeKey, String msgJson) {
-        boolean result = true;
-        log.info("rabbitmq 消息发送开始 exchange=[{}],routeKey=[{}],msg=[{}]",routeKey, msgJson);
-        try {
+  @Value("${rabitmq.queue.name}")
+  private String queueName;
 
-            rabbitChannel.basicPublish("", queueName, null, msgJson.getBytes());
+  /**
+   * 发送消息
+   *
+   * @param routeKey 路由键名称
+   * @param msgJson 消息json串
+   */
+  public boolean send(String routeKey, String msgJson) {
+    boolean result = true;
+    log.info("rabbitmq 消息发送开始 exchange=[{}],routeKey=[{}],msg=[{}]", routeKey, msgJson);
+    try {
 
-        } catch (Exception e) {
-            log.error("rabbitmq 消息发送失败 exchange=[{}],routeKey=[{}],msg=[{}]",routeKey, msgJson);
-            result = false;
-        }
+      rabbitChannel.basicPublish("", queueName, null, msgJson.getBytes());
 
-        log.info("rabbitmq 消息发送成功 exchange=[{}],routeKey=[{}],msg=[{}]",routeKey, msgJson);
-
-        return result;
+    } catch (Exception e) {
+      log.error("rabbitmq 消息发送失败 exchange=[{}],routeKey=[{}],msg=[{}]", routeKey, msgJson);
+      result = false;
     }
+
+    log.info("rabbitmq 消息发送成功 exchange=[{}],routeKey=[{}],msg=[{}]", routeKey, msgJson);
+
+    return result;
+  }
 }
